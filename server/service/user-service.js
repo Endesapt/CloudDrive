@@ -13,7 +13,7 @@ class UserService{
             throw ApiError.BadRequiest(`Пользователь с почтовым адресом ${email} уже существует`);
         }
         const hashPassword=await bcrypt.hash(password,4);
-        const user= await UserModel.create({email,password:hashPassword});
+        const user= await UserModel.create({email,password:hashPassword,files:[]});
         
         const userDto=new UserDto(user);
         const tokens = tokenService.generateToken({...userDto});
