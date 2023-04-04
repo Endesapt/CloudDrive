@@ -1,8 +1,18 @@
 const UserModel=require('../models/user-model');
 const ApiError =require('../exceptions/api-error');
 const FileModel=require('../models/file-model');
-const UserDto = require('../dto/user-dto');
 class CloudService{
+    async validateFile(userDto,fileId){
+        try{
+            const user=await UserModel.findById(userDto.id);
+            if(user.files.findIndex(file=>file.id==fileId)<0){
+                return null;
+            }
+            return true;
+        }catch{
+            return null;
+        }
+    }
     async addFile(userDto,fileInfo){
         const user=await UserModel.findById(userDto.id);
         if(!user){

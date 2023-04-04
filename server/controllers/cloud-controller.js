@@ -17,21 +17,7 @@ class CloudController{
             next(error);
         }
     }
-    async getFileById(req,res,next){
-        try {
-            const fileId=req.query.id;
-            if(!fileId){
-                throw ApiError.BadRequiest('No id provided');
-            }
-            const fileuri=await cloudService.getFileById(fileId);
-            
-            
-            res.json(fileuri);
-
-        } catch (error) {
-            next(error);
-        }
-    }
+    
     //actually,returns ID and naes of files user have
     async getAllFiles(req,res,next){
         try {
@@ -44,12 +30,21 @@ class CloudController{
             next(error);
         }
     }
+    async getFileById(req,res,next){
+        try {
+            const fileId=req.fileId;
+            const fileuri=await cloudService.getFileById(fileId);
+            
+            
+            res.json(fileuri);
+
+        } catch (error) {
+            next(error);
+        }
+    }
     async deleteFileById(req,res,next){
         try {
-            const fileId=req.query.id;
-            if(!fileId){
-                throw ApiError.BadRequiest('No id provided');
-            }
+            const fileId=req.fileId;
 
             const userDto=req.user;
             const file=await cloudService.deleteFileById(userDto,fileId);
@@ -62,7 +57,7 @@ class CloudController{
     async updateFileById(req,res,next){
         try {
             const {newName}=req.body;
-            const fileId=req.query.id;
+            const fileId=req.fileId;
             if(!fileId || !newName){
                 throw ApiError.BadRequiest('No id or no name provided');
             }
