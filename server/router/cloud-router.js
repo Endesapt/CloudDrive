@@ -7,9 +7,10 @@ cloudRouter.use(authMiddleware);
 
 
 cloudRouter.post('/addFile',cloudController.addFile);
+cloudRouter.put('/updateFileById',cloudController.updateFileById);
 cloudRouter.get('/getFileById',cloudController.getFileById)
 cloudRouter.get('/getAllFiles',cloudController.getAllFiles);
-cloudRouter.get('/deleteFileById',cloudController.deleteFileById);
-cloudRouter.get('/updateFileById',cloudController.updateFilesById);
+cloudRouter.delete('/deleteFileById',cloudController.deleteFileById);
+
 
 module.exports=cloudRouter;

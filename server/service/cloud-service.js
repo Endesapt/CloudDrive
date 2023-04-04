@@ -1,6 +1,7 @@
 const UserModel=require('../models/user-model');
 const ApiError =require('../exceptions/api-error');
 const FileModel=require('../models/file-model');
+const UserDto = require('../dto/user-dto');
 class CloudService{
     async addFile(userDto,fileInfo){
         const user=await UserModel.findById(userDto.id);
@@ -38,6 +39,46 @@ class CloudService{
         const uri='data:' + mimetype + ';' + encoding + ',' + data;
 
         return uri;
+    }
+    async getAllFiles(userDto){
+
+        const user= await UserModel.findById(userDto.id);
+        if(!user){
+            throw ApiError.BadRequiest(`There is no user with id ${userDto.id}`);
+        }
+
+        return user.files;
+    }
+    async deleteFileById(userDto,fileId){
+        const user= await UserModel.findById(userDto.id);
+        if(!user){
+            throw ApiError.BadRequiest(`There is no user with id ${userDto.id}`);
+        }
+        const file=await FileModel.findByIdAndDelete(fileId);
+        const fileIndex=user.files.findIndex(file=>file.id==fileId);
+        user.files.splice(fileIndex,1);
+        user.save();
+        return file;
+
+    }
+    async updateFileById(fileId,userDto,newName){
+        const user= await UserModel.findById(userDto.id);
+        if(!user){
+            throw ApiError.BadRequiest(`There is no user with id ${userDto.id}`);
+        }
+        const file=await FileModel.findById(fileId);
+        const newFileName=file.name.replace(/.+(\..+)$/,`${newName}$1`);
+        file.name=newFileName;
+        file.save();
+
+        //updating name in user database;
+        const fileIndex=user.files.findIndex(file=>file.id==fileId);
+        user.files[fileIndex].name=newFileName;
+        user.markModified(`files`);
+        user.save();
+
+        return file;
+
     }
 }
 module.exports=new CloudService();

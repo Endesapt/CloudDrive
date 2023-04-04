@@ -8,6 +8,7 @@
     <script>
         async function toBase64(fileData){
         const reader=new FileReader();
+		
         const base64URL=await reader.readAsDataURL(fileData);
         return base64URL;
     }
