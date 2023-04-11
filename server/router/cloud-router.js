@@ -3,8 +3,10 @@ const cloudRouter=new Router();
 const authMiddleware=require('../middleware/auth-middleware');
 const cloudController=require('../controllers/cloud-controller');
 const fileMiddleware=require('../middleware/file-middleware');
+const fileShareRouter=require('../router/fileshare-router');
 
 cloudRouter.use(authMiddleware);
+cloudRouter.use('/fileShare',fileShareRouter);
 
 
 cloudRouter.post('/addFile',cloudController.addFile);
