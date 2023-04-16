@@ -1,6 +1,7 @@
 const UserModel=require('../models/user-model');
 const ApiError =require('../exceptions/api-error');
 const FileModel=require('../models/file-model');
+const FileShareService=require('../service/fileshare-service');
 class CloudService{
     async validateFile(userDto,fileId){
         try{
@@ -88,6 +89,20 @@ class CloudService{
         user.save();
 
         return file;
+
+    }
+    async addFileShare(userDto,name){
+        const user= await UserModel.findById(userDto.id);
+        if(!user){
+            throw ApiError.BadRequiest(`There is no user with id ${userDto.id}`);
+        }
+        
+        const fileShare=await FileShareService.createFileShare(name,userDto.id);
+
+        user.fileShares.push(fileShare.id);
+        user.save();
+        return fileShare;
+
 
     }
 }

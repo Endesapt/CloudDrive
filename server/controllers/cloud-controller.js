@@ -71,6 +71,20 @@ class CloudController{
             next(error);
         }
     }
+    async addFileShare(req,res,next){
+        try {
+            const {name}=req.body;
+            const userDto=req.user;
+            if(!name)throw ApiError.BadRequiest('No name provided');
+
+            const fileShare=await cloudService.addFileShare(userDto,name);
+
+            res.json(fileShare);
+        } catch (error) {
+            next(error);
+        }
+
+    }
 }
 
 module.exports=new CloudController();

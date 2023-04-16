@@ -1,5 +1,5 @@
 const ApiError=require('../exceptions/api-error');
-const FileShareService=require('../service/fileshare-service');
+const fileShareService=require('../service/fileshare-service');
 class FileShareController{
     async addFile(req,res,next){
         try {
@@ -67,6 +67,21 @@ class FileShareController{
             const file=await fileShareService.updateFileById(fileId,fileShareDto,newName);
 
             res.json(file);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async addAllowedUser(req,res,next){
+        try {
+            const {userId}=req.body;
+            if(!userId)throw ApiError.BadRequiest('No userId  provided');
+            const fileShareId=req.fileShare.id;
+
+            const fileShare=await fileShareService.addAlowedUser(fileShareId,userId);
+
+            res.json(fileShare);
+            
+
         } catch (error) {
             next(error);
         }

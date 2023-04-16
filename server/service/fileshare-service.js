@@ -4,9 +4,8 @@ const FileModel=require('../models/file-model');
 class FileShareService{
     async validateUser(fileShareId,userDto){
         try{
-            const fileShare=await fileShareModel.findById(fileShareId);
-
-            if(fileShare.files.indexOf(userDto.id)<0){
+            const fileShare=await FileShareModel.findById(fileShareId);
+            if(fileShare.allowedUsers.indexOf(userDto.id)<0){
                 return null;
             }
             return true;
@@ -14,8 +13,19 @@ class FileShareService{
             return null;
         }
     }
+    async validateFile(fileId,fileShareId){
+        try{
+            const fileShare=await FileShareModel.findById(fileShareId);
+            if(fileShare.files.findIndex(file=>file.id==fileId)<0){
+                return null;
+            }
+            return true;
+        }catch{
+            return null;
+        }
+    }
     async addFile(fileShareDto,fileInfo){
-        const fileShare=await fileShareModel.findById(fileShareDto.id);
+        const fileShare=await FileShareModel.findById(fileShareDto.id);
 
         const filename=fileInfo.name;
         const data=fileInfo.data;
@@ -50,7 +60,7 @@ class FileShareService{
     }
     async getAllFiles(fileShareDto){
 
-        const fileShare= await fileShareModel.findById(fileShareDto.id);
+        const fileShare= await FileShareModel.findById(fileShareDto.id);
         if(!fileShare){
             throw ApiError.BadRequiest(`There is no fileShare with id ${fileShareDto.id}`);
         }
@@ -58,7 +68,7 @@ class FileShareService{
         return fileShare.files;
     }
     async deleteFileById(fileShareDto,fileId){
-        const fileShare= await fileShareModel.findById(fileShareDto.id);
+        const fileShare= await FileShareModel.findById(fileShareDto.id);
         if(!fileShare){
             throw ApiError.BadRequiest(`There is no fileShare with id ${fileShareDto.id}`);
         }
@@ -70,7 +80,7 @@ class FileShareService{
 
     }
     async updateFileById(fileId,fileShareDto,newName){
-        const fileShare= await fileShareModel.findById(fileShareDto.id);
+        const fileShare= await FileShareModel.findById(fileShareDto.id);
         if(!fileShare){
             throw ApiError.BadRequiest(`There is no fileShare with id ${fileShareDto.id}`);
         }
@@ -86,6 +96,22 @@ class FileShareService{
         fileShare.save();
 
         return file;
+
+    }
+    async createFileShare(name,userId){
+        const fileShare=await FileShareModel.create({
+            name:name,
+            allowedUsers:[userId]
+        })
+        return fileShare;
+    }
+    async addAlowedUser(fileShareId,userId){
+        const fileShare=await FileShareModel.findById(fileShareId);
+
+        fileShare.allowedUsers.push(userId);
+        fileShare.save();
+
+        return fileShare;
 
     }
 }
