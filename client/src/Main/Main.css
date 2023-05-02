@@ -1,0 +1,23 @@
+#wrapper{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-wrap: wrap;
+    min-width:300px;
+
+}
+nav{
+    width:150px;
+}
+nav>a{
+    display:block;
+    height:50px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    border: 1px black solid;
+}
+#div--main{
+    flex:2;
+}

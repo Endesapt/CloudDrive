@@ -1,6 +1,7 @@
 const FileShareModel=require('../models/fileshare-model');
 const ApiError =require('../exceptions/api-error');
 const FileModel=require('../models/file-model');
+const userModel = require('../models/user-model');
 class FileShareService{
     async validateUser(fileShareId,userDto){
         try{
@@ -43,7 +44,7 @@ class FileShareService{
         fileShare.files.push({id:file.id,name:filename});
         fileShare.save();
 
-        return file;
+        return file.name;
     }
     async getFileById(fileId){
         const file=await FileModel.findById(fileId);
@@ -76,7 +77,7 @@ class FileShareService{
         const fileIndex=fileShare.files.findIndex(file=>file.id==fileId);
         fileShare.files.splice(fileIndex,1);
         fileShare.save();
-        return file;
+        return file.name;
 
     }
     async updateFileById(fileId,fileShareDto,newName){
@@ -95,7 +96,7 @@ class FileShareService{
         fileShare.markModified(`files`);
         fileShare.save();
 
-        return file;
+        return file.name;
 
     }
     async createFileShare(name,userId){
@@ -110,6 +111,10 @@ class FileShareService{
 
         fileShare.allowedUsers.push(userId);
         fileShare.save();
+
+        const user=await userModel.findById(userId);
+        user.fileShares.push({name:fileShare.name,id:fileShare.id})
+        user.save();
 
         return fileShare;
 

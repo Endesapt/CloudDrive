@@ -15,5 +15,6 @@ cloudRouter.put('/updateFileById',fileMiddleware,cloudController.updateFileById)
 cloudRouter.get('/getFileById',fileMiddleware,cloudController.getFileById)
 cloudRouter.delete('/deleteFileById',fileMiddleware,cloudController.deleteFileById);
 cloudRouter.post('/addFileShare',cloudController.addFileShare);
+cloudRouter.get('/getFileShares',cloudController.getFileShares);
 
 module.exports=cloudRouter;

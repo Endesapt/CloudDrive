@@ -7,19 +7,27 @@ const router= require('./router/index');
 const cloudRouter=require('./router/cloud-router');
 const errorMiddleware=require("./middleware/error-midleware");
 const fileUpload = require("express-fileupload");
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const app=express();
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(fileUpload());
 app.use(express.urlencoded({extended: true}));
-app.use(cors({
-    credentials:true,
-    origin:"http://localhost:3000"
-}));
 app.use('/api',router);
 app.use('/cloud',cloudRouter);
+app.use(
+  '/',
+  createProxyMiddleware({
+    target: 'http://localhost:3000',
+    changeOrigin: true,
+  })
+);
 app.use(errorMiddleware);
+// app.use(cors({
+//     credentials:true,
+//     origin:"http://localhost:3000"
+// }));
 
 
 mongoose.connect(process.env.DB_URL,{useNewUrlParser:true,useUnifiedTopology:true});

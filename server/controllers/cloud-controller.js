@@ -85,6 +85,17 @@ class CloudController{
         }
 
     }
+    async getFileShares(req,res,next){
+        try {
+            const userDto=req.user;
+
+            const fileShares=await cloudService.getFileShares(userDto);
+
+            res.json(fileShares);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports=new CloudController();

@@ -36,7 +36,7 @@ class CloudService{
         user.files.push({id:file.id,name:filename});
         user.save();
 
-        return file;
+        return file.name;
     }
     async getFileById(fileId){
         const file=await FileModel.findById(fileId);
@@ -69,7 +69,7 @@ class CloudService{
         const fileIndex=user.files.findIndex(file=>file.id==fileId);
         user.files.splice(fileIndex,1);
         user.save();
-        return file;
+        return file.name;
 
     }
     async updateFileById(fileId,userDto,newName){
@@ -88,7 +88,7 @@ class CloudService{
         user.markModified(`files`);
         user.save();
 
-        return file;
+        return file.name;
 
     }
     async addFileShare(userDto,name){
@@ -99,11 +99,19 @@ class CloudService{
         
         const fileShare=await FileShareService.createFileShare(name,userDto.id);
 
-        user.fileShares.push(fileShare.id);
+        user.fileShares.push({name:name,id:fileShare.id});
         user.save();
         return fileShare;
 
 
+    }
+    async getFileShares(userDto){
+        const user=await UserModel.findById(userDto.id);
+        if(!user){
+            throw ApiError.BadRequiest(`There is no user with id ${userDto.id}`);
+        }
+
+        return user.fileShares; 
     }
 }
 module.exports=new CloudService();
