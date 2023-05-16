@@ -8,7 +8,8 @@ import Main from './Main/Main';
 
 
 function App() {
-  return (
+
+return (
     <CookiesProvider> 
       <BrowserRouter>
         <Routes>

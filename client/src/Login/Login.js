@@ -29,8 +29,8 @@ export default function Login(props){
     <div>
         <h1>Login</h1>
         <form onSubmit={submitForm}>
-            <input placeholder="login" onChange={(e)=>{setLogin(e.target.value)}} value={login} ></input>
-            <input placeholder="password" onChange={(e)=>{setPassword(e.target.value)}} value={password}></input>
+            <input placeholder="login" type="login" onChange={(e)=>{setLogin(e.target.value)}} value={login} ></input>
+            <input placeholder="password" type="password" onChange={(e)=>{setPassword(e.target.value)}} value={password}></input>
             <input type="submit" value="Login"></input>
         </form>
         {error&&(
