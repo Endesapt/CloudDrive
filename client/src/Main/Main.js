@@ -1,15 +1,16 @@
 import { useState } from "react";
 import axios from "react";
 import { useCookies } from "react-cookie";
-import { Navigate,Link,Route,Routes } from "react-router-dom";
+import { Navigate,Link,Route,Routes ,useSearchParams} from "react-router-dom";
 import axiosApi from "../api_provider/axios-api";
 import "./Main.css"
 import MyFiles from "./MyFiles/MyFiles";
 
 
 export default function Main(){
-    
-
+    const hiddenFileInput=useRef(null);
+    const [searchParams,setSearchParams]=useSearchParams();
+    const id=searchParams.get('id');
     const isLogged=window.localStorage.getItem("accessToken");
     if(!isLogged)return <Navigate to="/login"/>
 
@@ -18,11 +19,20 @@ export default function Main(){
             window.localStorage.removeItem("accessToken");
         });
     }
+    function handleDownloadClick(){
+        if (!file) {
+            return;
+        }
+    }
+    function handleFileChange(e){
+    }
+    //input для костыля
     return(
         <div id="wrapper">
             <nav >
                 <Link to="/">Main</Link>
-                <Link to="/">Download</Link>
+                <Link to="." onClick={handleDownloadClick}>Download</Link>
+                <input onChange={handleFileChange} id="file-input" type="file" name="name" style="display: none;" ref={hiddenFileInput} />
                 <Link to="/login" onClick={logout}>Logout</Link>
             </nav>
             <div id="div--main">
