@@ -15,7 +15,6 @@ axiosApi.interceptors.request.use(
     return config;
   },
   error => {
-    Promise.reject(error)
 });
 
 //делаеи новый запрос с попыткой
@@ -27,7 +26,12 @@ axiosApi.interceptors.response.use((response) => {
       originalRequest._retry = true;
       const access_token = await refreshToken();            
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
-      return axiosApi(originalRequest).catch(()=>{axiosApi.get("http://localhost:5000/api/logout")});
+      return axiosApi(originalRequest);
+    }
+    if(error.response.status === 401){
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('accessToken');
+      window.location.reload();
     }
     return Promise.reject(error);
 });
@@ -38,11 +42,15 @@ function getAccessToken(){
 }
 
 async function refreshToken(){
-  const {accessToken}=await axios.get("http://localhost:5000/api/refresh").then((res)=>{
-    return res.data
-  })
-  window.localStorage.setItem("accessToken",accessToken);
-  return accessToken;
+  try{
+    const {accessToken}=await axios.get("http://localhost:5000/api/refresh").then((res)=>{
+      return res.data
+    })
+    window.localStorage.setItem("accessToken",accessToken);
+    return accessToken;
+  }catch{
+    return null;
+  }
 }
 
 export default axiosApi;

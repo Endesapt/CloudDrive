@@ -5,18 +5,21 @@ import Login from './Login/Login';
 import { useState } from 'react';
 import Register from './Register/Register';
 import Main from './Main/Main';
+import Modal from './Modal/Modal';
 
 
 function App() {
-
+  const [modalActive,setModalActive]=useState(false);
+  const [modalText,setModalText]=useState();
 return (
     <CookiesProvider> 
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />}/>
           <Route path="/register" element={<Register/>}/>
-          <Route path="/*" element={<Main/>} />
+          <Route path="/*" element={<Main setModalText={setModalText} setModalActive={setModalActive}/>} />
         </Routes>
+        <Modal active={modalActive} setActive={setModalActive}>{modalText}</Modal>
       </BrowserRouter>
     </CookiesProvider> 
   );

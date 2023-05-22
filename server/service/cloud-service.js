@@ -19,8 +19,7 @@ class CloudService{
         if(!user){
             throw ApiError.BadRequiest(`пользователь ${user} не существует`);
         }
-
-        const filename=fileInfo.name;
+        const filename=decodeURIComponent(escape(fileInfo.name));
         const data=fileInfo.data;
         const mimetype=fileInfo.mimetype;
         const encoding=fileInfo.encoding;
@@ -36,7 +35,7 @@ class CloudService{
         user.files.push({id:file.id,name:filename});
         user.save();
 
-        return file.name;
+        return user.files;
     }
     async getFileById(fileId){
         const file=await FileModel.findById(fileId);
@@ -69,7 +68,7 @@ class CloudService{
         const fileIndex=user.files.findIndex(file=>file.id==fileId);
         user.files.splice(fileIndex,1);
         user.save();
-        return file.name;
+        return user.files;
 
     }
     async updateFileById(fileId,userDto,newName){
@@ -88,7 +87,7 @@ class CloudService{
         user.markModified(`files`);
         user.save();
 
-        return file.name;
+        return user.files;
 
     }
     async addFileShare(userDto,name){

@@ -3,14 +3,14 @@ const cloudService=require('../service/cloud-service');
 class CloudController{
     async addFile(req,res,next){
         try {
-            const fileInfo=req.files["undefined"];
+            const fileInfo=req.files.file;
             if(!fileInfo){
                 throw ApiError.BadRequiest('No file uploaded');
             }
 
             const userDto=req.user;
-            const file=await cloudService.addFile(userDto,fileInfo);
-            res.json(file);
+            const files=await cloudService.addFile(userDto,fileInfo);
+            res.json(files);
 
 
         } catch (error) {
@@ -47,9 +47,9 @@ class CloudController{
             const fileId=req.fileId;
 
             const userDto=req.user;
-            const file=await cloudService.deleteFileById(userDto,fileId);
+            const files=await cloudService.deleteFileById(userDto,fileId);
 
-            res.json(file);
+            res.json(files);
         } catch (error) {
             next(error);
         }
@@ -64,9 +64,9 @@ class CloudController{
 
             const userDto=req.user;
 
-            const file=await cloudService.updateFileById(fileId,userDto,newName);
+            const files=await cloudService.updateFileById(fileId,userDto,newName);
 
-            res.json(file);
+            res.json(files);
         } catch (error) {
             next(error);
         }

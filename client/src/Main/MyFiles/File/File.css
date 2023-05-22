@@ -1,5 +1,8 @@
 .file-block{
-    height:40px;
+    height:50px;
+    border:1px solid black;
+    display:flex;
+    margin-left:5px;
 }
 .file-block>img{
     width:calc(100%-20);
@@ -12,11 +15,13 @@
     align-items: center;
 }
 .file-name{
+    flex:2;
     display: flex;
     font-size:1.4rem;
     align-items: center;
 }
 .dropbtn {
+
     background-color: #4CAF50;
     color: white;
     padding: 16px;
@@ -58,3 +63,7 @@
 .dropdown a:hover {background-color: #ddd;}
 
 .show {display: block;}
+
+#drop-nav>a{
+    cursor:pointer;
+}
