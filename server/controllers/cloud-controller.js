@@ -33,10 +33,10 @@ class CloudController{
     async getFileById(req,res,next){
         try {
             const fileId=req.fileId;
-            const fileuri=await cloudService.getFileById(fileId);
+            const fileURL=await cloudService.getFileById(fileId);
             
             
-            res.json(fileuri);
+            res.sendFile(fileURL);
 
         } catch (error) {
             next(error);

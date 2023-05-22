@@ -2,6 +2,9 @@ const UserModel=require('../models/user-model');
 const ApiError =require('../exceptions/api-error');
 const FileModel=require('../models/file-model');
 const FileShareService=require('../service/fileshare-service');
+const fs=require('fs');
+const uniqid=require('uniqid');
+const path=require('path');
 class CloudService{
     async validateFile(userDto,fileId){
         try{
@@ -19,20 +22,23 @@ class CloudService{
         if(!user){
             throw ApiError.BadRequiest(`пользователь ${user} не существует`);
         }
-        const filename=decodeURIComponent(escape(fileInfo.name));
-        const data=fileInfo.data;
-        const mimetype=fileInfo.mimetype;
-        const encoding=fileInfo.encoding;
+        const [filename,ext]=decodeURIComponent(escape(fileInfo.name)).split('.');
+        const fileId=uniqid();
+        const fileBuffer=Buffer.from(fileInfo.data);
+        
+        const folderPath=path.join(__dirname,`../files/${userDto.id}`);
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath);
+        }
+        fs.writeFileSync(path.join(folderPath,fileId+'.'+ext),fileBuffer);
 
         const file=await FileModel.create({
-            name:filename,
-            data:data,
-            mimetype:mimetype,
-            encoding:"base64"
-
+            ext:ext,
+            name:filename+'.'+ext,
+            URL:path.join(folderPath,fileId+'.'+ext)
         });
         
-        user.files.push({id:file.id,name:filename});
+        user.files.push({id:file.id,name:filename+'.'+ext});
         user.save();
 
         return user.files;
@@ -43,12 +49,8 @@ class CloudService{
             throw ApiError.BadRequiest('Такого файла не существует');
         }
 
-        const mimetype=file.mimetype;
-        const encoding=file.encoding;
-        const data=file.data.toString(encoding);
-        const uri='data:' + mimetype + ';' + encoding + ',' + data;
-
-        return uri;
+        return file.URL;
+        
     }
     async getAllFiles(userDto){
 
@@ -64,7 +66,11 @@ class CloudService{
         if(!user){
             throw ApiError.BadRequiest(`There is no user with id ${userDto.id}`);
         }
+        
         const file=await FileModel.findByIdAndDelete(fileId);
+        fs.unlink(file.URL,(err)=>{if(err){throw new ApiError(500,err)}});
+        
+
         const fileIndex=user.files.findIndex(file=>file.id==fileId);
         user.files.splice(fileIndex,1);
         user.save();
