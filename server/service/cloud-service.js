@@ -24,18 +24,19 @@ class CloudService{
         }
         const [filename,ext]=decodeURIComponent(escape(fileInfo.name)).split('.');
         const fileId=uniqid();
+        const fullName=fileId+'.'+ext;
         const fileBuffer=Buffer.from(fileInfo.data);
         
         const folderPath=path.join(__dirname,`../files/${userDto.id}`);
         if (!fs.existsSync(folderPath)) {
             fs.mkdirSync(folderPath);
         }
-        fs.writeFileSync(path.join(folderPath,fileId+'.'+ext),fileBuffer);
+        fs.writeFileSync(path.join(folderPath,fullName),fileBuffer);
 
         const file=await FileModel.create({
             ext:ext,
             name:filename+'.'+ext,
-            URL:path.join(folderPath,fileId+'.'+ext)
+            URL:path.join(folderPath,fullName)
         });
         
         user.files.push({id:file.id,name:filename+'.'+ext});

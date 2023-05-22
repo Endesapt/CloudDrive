@@ -28,20 +28,24 @@ class FileShareService{
     async addFile(fileShareDto,fileInfo){
         const fileShare=await FileShareModel.findById(fileShareDto.id);
 
-        const filename=fileInfo.name;
-        const data=fileInfo.data;
-        const mimetype=fileInfo.mimetype;
-        const encoding=fileInfo.encoding;
+        const [filename,ext]=decodeURIComponent(escape(fileInfo.name)).split('.');
+        const fileId=uniqid();
+        const fullName=fileId+'.'+ext;
+        const fileBuffer=Buffer.from(fileInfo.data);
+        
+        const folderPath=path.join(__dirname,`../fileShares/${userDto.id}`);
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath);
+        }
+        fs.writeFileSync(path.join(folderPath,fullName),fileBuffer);
 
         const file=await FileModel.create({
-            name:filename,
-            data:data,
-            mimetype:mimetype,
-            encoding:"base64"
-
+            ext:ext,
+            name:filename+'.'+ext,
+            URL:path.join(folderPath,fullName)
         });
         
-        fileShare.files.push({id:file.id,name:filename});
+        fileShare.files.push({id:file.id,name:filename+'.'+ext});
         fileShare.save();
 
         return file.name;
@@ -51,13 +55,7 @@ class FileShareService{
         if(!file){
             throw ApiError.BadRequiest('Такого файла не существует');
         }
-
-        const mimetype=file.mimetype;
-        const encoding=file.encoding;
-        const data=file.data.toString(encoding);
-        const uri='data:' + mimetype + ';' + encoding + ',' + data;
-
-        return uri;
+        return file.URL;
     }
     async getAllFiles(fileShareDto){
 
@@ -75,6 +73,7 @@ class FileShareService{
         }
         const file=await FileModel.findByIdAndDelete(fileId);
         const fileIndex=fileShare.files.findIndex(file=>file.id==fileId);
+        fs.unlink(file.URL,(err)=>{if(err){throw new ApiError(500,err)}});
         fileShare.files.splice(fileIndex,1);
         fileShare.save();
         return file.name;

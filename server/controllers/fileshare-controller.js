@@ -3,7 +3,7 @@ const fileShareService=require('../service/fileshare-service');
 class FileShareController{
     async addFile(req,res,next){
         try {
-            const fileInfo=req.files["undefined"];
+            const fileInfo=req.files.file;
             if(!fileInfo){
                 throw ApiError.BadRequiest('No file uploaded');
             }
@@ -33,10 +33,10 @@ class FileShareController{
     async getFileById(req,res,next){
         try {
             const fileId=req.fileId;
-            const fileuri=await fileShareService.getFileById(fileId);
+            const fileURL=await fileShareService.getFileById(fileId);
             
             
-            res.json(fileuri);
+            res.sendFile(fileURL);
 
         } catch (error) {
             next(error);

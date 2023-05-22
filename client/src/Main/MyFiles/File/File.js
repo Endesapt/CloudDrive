@@ -12,17 +12,29 @@ export default function File(props){
         if(isShowed)setShowed(false);
     }
     function showFile(){
-        axiosApi.get("http://localhost:5000/cloud/getFileById",{params:{id:id}}).then(res=>{
-            const iframe = "<iframe width='100%' height='100%' src='" + res.data + "'></iframe>"
+        axiosApi({
+            url: "http://localhost:5000/cloud/getFileById", //your url
+            method: 'GET',
+            responseType: 'blob', // important
+            params:{id:id}
+        }).then(res=>{
+            const dataURL =URL.createObjectURL(res.data);
+            const iframe = "<iframe width='100%' height='100%' src='" +dataURL + "'></iframe>"
             const x = window.open();
             x.document.open();
             x.document.write(iframe);
             x.document.close();
+            
         });
     }
     function downloadFile(){
-        axiosApi.get("http://localhost:5000/cloud/getFileById",{params:{id:id}}).then(res=>{
-            const data = res.data;
+        axiosApi({
+            url: "http://localhost:5000/cloud/getFileById", //your url
+            method: 'GET',
+            responseType: 'blob', // important
+            params:{id:id}
+        }).then(res=>{
+            const data = URL.createObjectURL(res.data);
             const link = document.createElement('a');
             
             link.setAttribute('href', data);
