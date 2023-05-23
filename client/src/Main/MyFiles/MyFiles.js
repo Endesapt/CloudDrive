@@ -6,6 +6,7 @@ import File from "./File/File";
 export default function MyFiles(props){
     const {files,setFiles}=props;
     useEffect(()=>{
+        setFiles([]);
         axiosApi.get("http://localhost:5000/cloud/getAllFiles").then((res)=>{
             setFiles(res.data);
         })

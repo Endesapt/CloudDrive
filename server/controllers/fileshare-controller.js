@@ -3,7 +3,7 @@ const fileShareService=require('../service/fileshare-service');
 class FileShareController{
     async addFile(req,res,next){
         try {
-            const fileInfo=req.files["undefined"];
+            const fileInfo=req.files.file;
             if(!fileInfo){
                 throw ApiError.BadRequiest('No file uploaded');
             }
@@ -33,10 +33,10 @@ class FileShareController{
     async getFileById(req,res,next){
         try {
             const fileId=req.fileId;
-            const fileuri=await fileShareService.getFileById(fileId);
+            const fileURL=await fileShareService.getFileById(fileId);
             
             
-            res.json(fileuri);
+            res.sendFile(fileURL);
 
         } catch (error) {
             next(error);
@@ -47,9 +47,9 @@ class FileShareController{
             const fileId=req.fileId;
 
             const fileShareDto=req.fileShare;
-            const file=await fileShareService.deleteFileById(fileShareDto,fileId);
+            const files=await fileShareService.deleteFileById(fileShareDto,fileId);
 
-            res.json(file);
+            res.json(files);
         } catch (error) {
             next(error);
         }
@@ -64,20 +64,20 @@ class FileShareController{
 
             const fileShareDto=req.fileShare;
 
-            const file=await fileShareService.updateFileById(fileId,fileShareDto,newName);
+            const files=await fileShareService.updateFileById(fileId,fileShareDto,newName);
 
-            res.json(file);
+            res.json(files);
         } catch (error) {
             next(error);
         }
     }
     async addAllowedUser(req,res,next){
         try {
-            const {userId}=req.body;
-            if(!userId)throw ApiError.BadRequiest('No userId  provided');
+            const {userMail}=req.body;
+            if(!userMail)throw ApiError.BadRequiest('No userMail  provided');
             const fileShareId=req.fileShare.id;
 
-            const fileShare=await fileShareService.addAlowedUser(fileShareId,userId);
+            const fileShare=await fileShareService.addAlowedUser(fileShareId,userMail);
 
             res.json(fileShare);
             

@@ -33,10 +33,10 @@ class CloudController{
     async getFileById(req,res,next){
         try {
             const fileId=req.fileId;
-            const fileuri=await cloudService.getFileById(fileId);
+            const fileURL=await cloudService.getFileById(fileId);
             
             
-            res.json(fileuri);
+            res.sendFile(fileURL);
 
         } catch (error) {
             next(error);
@@ -77,9 +77,9 @@ class CloudController{
             const userDto=req.user;
             if(!name)throw ApiError.BadRequiest('No name provided');
 
-            const fileShare=await cloudService.addFileShare(userDto,name);
+            const fileShares=await cloudService.addFileShare(userDto,name);
 
-            res.json(fileShare);
+            res.json(fileShares);
         } catch (error) {
             next(error);
         }

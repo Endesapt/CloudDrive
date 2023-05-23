@@ -2,6 +2,9 @@ const FileShareModel=require('../models/fileshare-model');
 const ApiError =require('../exceptions/api-error');
 const FileModel=require('../models/file-model');
 const userModel = require('../models/user-model');
+const fs=require('fs');
+const uniqid=require('uniqid');
+const path=require('path');
 class FileShareService{
     async validateUser(fileShareId,userDto){
         try{
@@ -28,36 +31,34 @@ class FileShareService{
     async addFile(fileShareDto,fileInfo){
         const fileShare=await FileShareModel.findById(fileShareDto.id);
 
-        const filename=fileInfo.name;
-        const data=fileInfo.data;
-        const mimetype=fileInfo.mimetype;
-        const encoding=fileInfo.encoding;
+        const [filename,ext]=decodeURIComponent(escape(fileInfo.name)).split('.');
+        const fileId=uniqid();
+        const fullName=fileId+'.'+ext;
+        const fileBuffer=Buffer.from(fileInfo.data);
+        
+        const folderPath=path.join(__dirname,`../fileShares/${fileShare.id}`);
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath);
+        }
+        fs.writeFileSync(path.join(folderPath,fullName),fileBuffer);
 
         const file=await FileModel.create({
-            name:filename,
-            data:data,
-            mimetype:mimetype,
-            encoding:"base64"
-
+            ext:ext,
+            name:filename+'.'+ext,
+            URL:path.join(folderPath,fullName)
         });
         
-        fileShare.files.push({id:file.id,name:filename});
+        fileShare.files.push({id:file.id,name:filename+'.'+ext});
         fileShare.save();
 
-        return file.name;
+        return fileShare.files;
     }
     async getFileById(fileId){
         const file=await FileModel.findById(fileId);
         if(!file){
             throw ApiError.BadRequiest('Такого файла не существует');
         }
-
-        const mimetype=file.mimetype;
-        const encoding=file.encoding;
-        const data=file.data.toString(encoding);
-        const uri='data:' + mimetype + ';' + encoding + ',' + data;
-
-        return uri;
+        return file.URL;
     }
     async getAllFiles(fileShareDto){
 
@@ -75,9 +76,10 @@ class FileShareService{
         }
         const file=await FileModel.findByIdAndDelete(fileId);
         const fileIndex=fileShare.files.findIndex(file=>file.id==fileId);
+        fs.unlink(file.URL,(err)=>{if(err){throw new ApiError(500,err)}});
         fileShare.files.splice(fileIndex,1);
         fileShare.save();
-        return file.name;
+        return fileShare.files;
 
     }
     async updateFileById(fileId,fileShareDto,newName){
@@ -96,7 +98,7 @@ class FileShareService{
         fileShare.markModified(`files`);
         fileShare.save();
 
-        return file.name;
+        return fileShare.files;
 
     }
     async createFileShare(name,userId){
@@ -106,13 +108,16 @@ class FileShareService{
         })
         return fileShare;
     }
-    async addAlowedUser(fileShareId,userId){
+    async addAlowedUser(fileShareId,userMail){
         const fileShare=await FileShareModel.findById(fileShareId);
 
-        fileShare.allowedUsers.push(userId);
+        const user=await userModel.findOne({email:userMail});
+        if(!user)throw  ApiError.BadRequiest("No such email " + userMail);
+
+        fileShare.allowedUsers.push(user.id);
         fileShare.save();
 
-        const user=await userModel.findById(userId);
+        
         user.fileShares.push({name:fileShare.name,id:fileShare.id})
         user.save();
 
