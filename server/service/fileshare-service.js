@@ -2,6 +2,9 @@ const FileShareModel=require('../models/fileshare-model');
 const ApiError =require('../exceptions/api-error');
 const FileModel=require('../models/file-model');
 const userModel = require('../models/user-model');
+const fs=require('fs');
+const uniqid=require('uniqid');
+const path=require('path');
 class FileShareService{
     async validateUser(fileShareId,userDto){
         try{
@@ -33,7 +36,7 @@ class FileShareService{
         const fullName=fileId+'.'+ext;
         const fileBuffer=Buffer.from(fileInfo.data);
         
-        const folderPath=path.join(__dirname,`../fileShares/${userDto.id}`);
+        const folderPath=path.join(__dirname,`../fileShares/${fileShare.id}`);
         if (!fs.existsSync(folderPath)) {
             fs.mkdirSync(folderPath);
         }
@@ -48,7 +51,7 @@ class FileShareService{
         fileShare.files.push({id:file.id,name:filename+'.'+ext});
         fileShare.save();
 
-        return file.name;
+        return fileShare.files;
     }
     async getFileById(fileId){
         const file=await FileModel.findById(fileId);
@@ -76,7 +79,7 @@ class FileShareService{
         fs.unlink(file.URL,(err)=>{if(err){throw new ApiError(500,err)}});
         fileShare.files.splice(fileIndex,1);
         fileShare.save();
-        return file.name;
+        return fileShare.files;
 
     }
     async updateFileById(fileId,fileShareDto,newName){
@@ -95,7 +98,7 @@ class FileShareService{
         fileShare.markModified(`files`);
         fileShare.save();
 
-        return file.name;
+        return fileShare.files;
 
     }
     async createFileShare(name,userId){
@@ -105,13 +108,16 @@ class FileShareService{
         })
         return fileShare;
     }
-    async addAlowedUser(fileShareId,userId){
+    async addAlowedUser(fileShareId,userMail){
         const fileShare=await FileShareModel.findById(fileShareId);
 
-        fileShare.allowedUsers.push(userId);
+        const user=await userModel.findOne({email:userMail});
+        if(!user)throw  ApiError.BadRequiest("No such email " + userMail);
+
+        fileShare.allowedUsers.push(user.id);
         fileShare.save();
 
-        const user=await userModel.findById(userId);
+        
         user.fileShares.push({name:fileShare.name,id:fileShare.id})
         user.save();
 

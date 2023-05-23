@@ -1,0 +1,38 @@
+.fileshare-block{
+    height:50px;
+    border:1px solid black;
+    display:flex;
+    margin-left:5px;
+    display: block;
+    text-decoration: none;
+    color:initial;
+}
+.fileshare-block:visited{
+    color:initial;
+}
+.fileshare-block:hover{
+    color:initial;
+}
+.fileshare-block:hover{
+    cursor:pointer;
+}
+.fileshare-name{
+    flex:2;
+    display: flex;
+    font-size:1.4rem;
+    align-items: center;
+
+}
+.addfileShare-button{
+    height:50px;
+    border:1px solid black;
+    display:flex;
+    margin-left:5px;
+    display: block;
+    text-decoration: none;
+    margin-bottom:10px;
+    font-size:1.5em;
+}
+.addfileShare-button:hover{
+    cursor:pointer;
+}

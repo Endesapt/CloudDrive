@@ -107,7 +107,7 @@ class CloudService{
 
         user.fileShares.push({name:name,id:fileShare.id});
         user.save();
-        return fileShare;
+        return user.fileShares;
 
 
     }

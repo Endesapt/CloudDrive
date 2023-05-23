@@ -2,7 +2,7 @@ const ApiError=require('../exceptions/api-error');
 const fileShareService=require('../service/fileshare-service');
 module.exports=async function(req,res,next){
     try{
-        const fileShareId=req.body.fileShareId;
+        const fileShareId=req.query.fileShareId || req.body.fileShareId;
         const userDto=req.user;
         if(!fileShareId || !userDto) return next(ApiError.BadRequiest("No id provided"));
 

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import "./File.css"
 import axiosApi from "../../../api_provider/axios-api";
-export default function File(props){
+export default function FileShareFile(props){
     const [isShowed,setShowed]=useState(false);
     const id=props.id;
     const [name,ext]=props.name.split(".");
+    const fileShareId=props.fileShareId;
     function handle(){
         setShowed((isShowed)=>(!isShowed));
     }
@@ -13,10 +13,10 @@ export default function File(props){
     }
     function showFile(){
         axiosApi({
-            url: "http://localhost:5000/cloud/getFileById", //your url
+            url: "http://localhost:5000/cloud/fileShare/getFileById", //your url
             method: 'GET',
             responseType: 'blob', // important
-            params:{id:id}
+            params:{id:id,fileShareId:fileShareId}
         }).then(res=>{
             const dataURL =URL.createObjectURL(res.data);
             window.location.href=dataURL;
@@ -25,10 +25,10 @@ export default function File(props){
     }
     function downloadFile(){
         axiosApi({
-            url: "http://localhost:5000/cloud/getFileById", //your url
+            url: "http://localhost:5000/cloud/fileShare/getFileById", //your url
             method: 'GET',
             responseType: 'blob', // important
-            params:{id:id}
+            params:{id:id,fileShareId:fileShareId}
         }).then(res=>{
             const data = URL.createObjectURL(res.data);
             const link = document.createElement('a');
@@ -45,7 +45,7 @@ export default function File(props){
         });
     }
     function deleteFile(){
-        axiosApi.delete("http://localhost:5000/cloud/deleteFileById",{params:{id:id}}).then(res=>{
+        axiosApi.delete("http://localhost:5000/cloud/fileShare/deleteFileById",{params:{id:id,fileShareId:fileShareId}}).then(res=>{
             props.setFiles(res.data);
         });
     }
@@ -57,7 +57,7 @@ export default function File(props){
             <p>NEW NAME: <input id="newName"></input></p>
             <button onClick={()=>{
                 const newName=document.getElementById("newName").value;
-                axiosApi.put("http://localhost:5000/cloud/updateFileById",{id:id,newName:newName}).then(res=>{
+                axiosApi.put("http://localhost:5000/cloud/fileShare/updateFileById",{id:id,newName:newName,fileShareId:fileShareId}).then(res=>{
                     props.setFiles(res.data);
                 });
                 setModalActive(false);
