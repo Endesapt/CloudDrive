@@ -86,6 +86,53 @@ class FileShareController{
             next(error);
         }
     }
+    async addUsersFile(req,res,next){
+        try{
+            const fileId=req.fileId;
+            const fileShareId=req.fileShare.id;
+            
+            const fileShare=await fileShareService.addUsersFile(fileShareId,fileId);
+
+            res.json(fileShare);
+        }catch(error){
+            next(error);
+        }
+    }
+    async deleteFileShare(req,res,next){
+        try{
+            const fileShareId=req.fileShare.id;
+
+            const fileShare=await fileShareService.deleteFileShare(fileShareId);
+
+            res.json(fileShare);
+        }catch(error){
+            next(error);
+        }
+    }
+    async leaveFileShare(req,res,next){
+        try {
+            const fileShareId=req.fileShare.id;
+            const userId=req.user.id;
+
+            const fileShare=await fileShareService.leaveFileShare(fileShareId,userId);
+
+            res.json(fileShare);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getFileShareLink(req,res,next){
+        try{
+            const fileShareId=req.fileShare.id;
+
+            const link=await fileShareService.getFileShareLink(fileShareId);
+
+            res.send(link);
+        }catch(error){
+            next(error);
+        }
+        
+    }
 }
 
 module.exports=new FileShareController();

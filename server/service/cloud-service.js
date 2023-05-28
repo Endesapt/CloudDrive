@@ -5,6 +5,7 @@ const FileShareService=require('../service/fileshare-service');
 const fs=require('fs');
 const uniqid=require('uniqid');
 const path=require('path');
+const fileshareModel = require('../models/fileshare-model');
 class CloudService{
     async validateFile(userDto,fileId){
         try{
@@ -118,6 +119,19 @@ class CloudService{
         }
 
         return user.fileShares; 
+    }
+    async addFileShareLink(userDto,fileShareLink){
+        const fileShare=await fileshareModel.findOne({addUserId:fileShareLink});
+        if(!fileShare)throw new ApiError.BadRequiest("Invalid Link");
+        const user=await UserModel.findById(userDto.id);
+
+        user.fileShares.push({id:fileShare.id,name:fileShare.name});
+        fileShare.allowedUsers.push(userDto.id);
+
+        user.save();
+        fileShare.save();
+        return fileShare;
+
     }
 }
 module.exports=new CloudService();

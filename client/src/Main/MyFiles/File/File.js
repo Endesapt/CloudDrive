@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./File.css"
 import axiosApi from "../../../api_provider/axios-api";
+import ShareModal from "../ShareModal/ShareModal";
 export default function File(props){
     const [isShowed,setShowed]=useState(false);
     const id=props.id;
@@ -34,7 +35,7 @@ export default function File(props){
             const link = document.createElement('a');
             
             link.setAttribute('href', data);
-            link.setAttribute('download',name);
+            link.setAttribute('download',props.name);
             link.style.display = 'none';
             
             document.body.appendChild(link);
@@ -65,6 +66,12 @@ export default function File(props){
                 }}>Change</button>
             </div>);
     }
+    function shareFile(){
+        const setModalActive=props.setModalActive;
+        const setModalText=props.setModalText;
+        setModalActive(true);
+        setModalText(<ShareModal setModalActive={setModalActive} fileId={id}/>);
+    }
     return(<div className="file-block">
         <div>
             <div className="file-name">{props.name}</div>
@@ -75,7 +82,7 @@ export default function File(props){
                     <a onClick={downloadFile}>Download</a>
                     <a onClick={deleteFile}>Delete</a>
                     <a onClick={renameFile}>Rename</a>
-                    <a href="#contact">Share</a>
+                    <a onClick={shareFile}>Share</a>
                 </div>
             </div>
         </div>

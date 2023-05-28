@@ -5,6 +5,8 @@ const userModel = require('../models/user-model');
 const fs=require('fs');
 const uniqid=require('uniqid');
 const path=require('path');
+const fileModel = require('../models/file-model');
+const uuid=require('uuid');
 class FileShareService{
     async validateUser(fileShareId,userDto){
         try{
@@ -70,16 +72,22 @@ class FileShareService{
         return fileShare.files;
     }
     async deleteFileById(fileShareDto,fileId){
+        
+        const file=await FileModel.findByIdAndDelete(fileId);
+        fs.unlink(file.URL,(err)=>{if(err){throw new ApiError(500,err)}});
+        //in case we are deleting whole fileShare
+
         const fileShare= await FileShareModel.findById(fileShareDto.id);
         if(!fileShare){
             throw ApiError.BadRequiest(`There is no fileShare with id ${fileShareDto.id}`);
         }
-        const file=await FileModel.findByIdAndDelete(fileId);
         const fileIndex=fileShare.files.findIndex(file=>file.id==fileId);
-        fs.unlink(file.URL,(err)=>{if(err){throw new ApiError(500,err)}});
         fileShare.files.splice(fileIndex,1);
-        fileShare.save();
+        fileShare.save((err)=>{
+            console.log(err);
+        });
         return fileShare.files;
+        
 
     }
     async updateFileById(fileId,fileShareDto,newName){
@@ -102,9 +110,11 @@ class FileShareService{
 
     }
     async createFileShare(name,userId){
+        const addUserId=uuid.v4();
         const fileShare=await FileShareModel.create({
             name:name,
-            allowedUsers:[userId]
+            allowedUsers:[userId],
+            addUserId:addUserId
         })
         return fileShare;
     }
@@ -123,6 +133,67 @@ class FileShareService{
 
         return fileShare;
 
+    }
+    async addUsersFile(fileShareId,fileId){
+        const fileShare=await FileShareModel.findById(fileShareId);
+
+        const file=await fileModel.findById(fileId);
+
+        const folderPath=path.join(__dirname,'../fileShares',fileShare.id);
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath);
+        }
+        fs.copyFile(file.URL,path.join(folderPath,file.id+'.'+file.ext),(err)=>{});
+
+        const newFile=await FileModel.create({
+            ext:file.ext,
+            name:file.name,
+            URL:path.join(folderPath,file.id+'.'+file.ext)
+        });
+        
+        fileShare.files.push({id:newFile.id,name:file.name});
+        fileShare.save();
+
+        return fileShare;
+    }
+    async deleteFileShare(fileShareId){
+        const fileShare=await FileShareModel.findById(fileShareId);
+        for(let fileDto of fileShare.files){
+            const file=await FileModel.findByIdAndDelete(fileDto.id);
+            fs.unlink(file.URL,(err)=>{if(err){throw new ApiError(500,err)}});
+        }
+        for(let userDto of fileShare.allowedUsers){
+            let user=await userModel.findById(userDto);
+            const index = user.fileShares.findIndex((obj) => obj.id === fileShare.id);
+            user.fileShares.splice(index,1);
+            user.markModified("fileShares");
+            user.save();
+        }
+        fileShare.deleteOne();
+        return fileShare;
+    }
+    async leaveFileShare(fileShareId,userId){
+        const fileShare= await FileShareModel.findById(fileShareId);
+        const user=await userModel.findById(userId);
+        user.fileShares.splice(user.fileShares.findIndex((val)=>val.id==fileShareId),1);
+        fileShare.allowedUsers.splice(fileShare.allowedUsers.findIndex((val)=>val.id==userId),1);
+        if(fileShare.allowedUsers.length==0)this.deleteFileShare(fileShareId);
+
+        fileShare.markModified("allowedUsers");
+        user.markModified('fileShares');
+
+        fileShare.save();
+        user.save();
+
+        return fileShare;
+
+    }
+    async getFileShareLink(fileShareId){
+        const fileShare=await FileShareModel.findById(fileShareId);
+
+        const linkId=fileShare.addUserId;
+
+        return "http://localhost:5000/cloud/addFileShareLink/"+linkId;
     }
 }
 module.exports=new FileShareService();

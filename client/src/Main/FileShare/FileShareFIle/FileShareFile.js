@@ -34,7 +34,7 @@ export default function FileShareFile(props){
             const link = document.createElement('a');
             
             link.setAttribute('href', data);
-            link.setAttribute('download',name);
+            link.setAttribute('download',props.name);
             link.style.display = 'none';
             
             document.body.appendChild(link);
@@ -75,7 +75,6 @@ export default function FileShareFile(props){
                     <a onClick={downloadFile}>Download</a>
                     <a onClick={deleteFile}>Delete</a>
                     <a onClick={renameFile}>Rename</a>
-                    <a href="#contact">Share</a>
                 </div>
             </div>
         </div>

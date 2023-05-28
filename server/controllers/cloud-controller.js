@@ -96,6 +96,18 @@ class CloudController{
             next(error);
         }
     }
+    async addFileShareLink(req,res,next){
+        try{
+            const userDto=req.user;
+            const fileShareLink=req.params.id;
+
+            const fileShare=await cloudService.addFileShareLink(userDto,fileShareLink);
+
+            res.redirect('http://localhost:5000/');
+        }catch(error){
+            next(error)
+        }
+    }
 }
 
 module.exports=new CloudController();
