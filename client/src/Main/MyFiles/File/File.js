@@ -19,9 +19,17 @@ export default function File(props){
             responseType: 'blob', // important
             params:{id:id}
         }).then(res=>{
-            const dataURL =URL.createObjectURL(res.data);
-            window.location.href=dataURL;
+            const data =URL.createObjectURL(res.data);
+            const link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('target', "_blank");
+            link.style.display = 'none';
+            document.body.appendChild(link);
             
+            link.click();
+            
+            document.body.removeChild(link);
+
         });
     }
     function downloadFile(){
@@ -31,7 +39,7 @@ export default function File(props){
             responseType: 'blob', // important
             params:{id:id}
         }).then(res=>{
-            const data = URL.createObjectURL(res.data);
+            const data = URL.createObjectURL(new Blob(res.data));
             const link = document.createElement('a');
             
             link.setAttribute('href', data);

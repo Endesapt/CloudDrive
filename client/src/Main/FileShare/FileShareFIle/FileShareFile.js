@@ -18,8 +18,16 @@ export default function FileShareFile(props){
             responseType: 'blob', // important
             params:{id:id,fileShareId:fileShareId}
         }).then(res=>{
-            const dataURL =URL.createObjectURL(res.data);
-            window.location.href=dataURL;
+            const data =URL.createObjectURL(res.data);
+            const link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('target', "_blank");
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            
+            link.click();
+            
+            document.body.removeChild(link);
             
         });
     }
