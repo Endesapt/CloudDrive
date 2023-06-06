@@ -193,7 +193,7 @@ class FileShareService{
 
         const linkId=fileShare.addUserId;
 
-        return "http://localhost:5000/cloud/addFileShareLink/"+linkId;
+        return "http://localhost:5000/addFileShareLink/"+linkId;
     }
 }
 module.exports=new FileShareService();

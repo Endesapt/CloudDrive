@@ -47,10 +47,11 @@ export default function FileShare(props){
                 axiosApi.put("http://localhost:5000/cloud/fileShare/addAllowedUser",{userMail:userMail,fileShareId:fileShareId}).then(res=>{
                     setModalActive(false);
                     document.getElementById("newName").value="";
-                    alert("SUCCESS")
                 });
                 
                 }}>Submit</button><br/>
+                Or give user link to this FileShare<br/>
+            <span style={{color:"blue"}}>{userLink}</span>
             </div>);
     }
     return (<>
