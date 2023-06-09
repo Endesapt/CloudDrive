@@ -25,8 +25,50 @@ export default function Login(props){
     }
     if(logged){return <Navigate to="/"/>}
     return(
+    <div class="wrapper">
+      <section class="login-content">
+         <div class="container h-100">
+            <div class="row justify-content-center align-items-center height-self-center">
+               <div class="col-md-5 col-sm-12 col-12 align-self-center">
+                  <div class="sign-user_card">
+                     <h3 class="mb-3">Sign In</h3>
+                     <p>Login to stay connected.</p>
+                     <form onSubmit={submitForm}>
+                        <div class="row">
+                           <div class="col-lg-12">
+                              <div class="floating-label form-group">
+                                 <input class="floating-input form-control" type="email" placeholder=" " onChange={(e)=>{setLogin(e.target.value)}} value={login}/>
+                                 <label>Login</label>
+                              </div>
+                           </div>
+                           <div class="col-lg-12">
+                              <div class="floating-label form-group">
+                                 <input class="floating-input form-control" type="password" placeholder=" "onChange={(e)=>{setPassword(e.target.value)}} value={password}/>
+                                 <label>Password</label>
+                              </div>
+                           </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                        <p class="mt-3">
+                           Create an Account <Link to="/register" class="text-primary">Sign Up</Link>  
+                        </p>
+                        {error&&(
+                            <div class="alert alert-danger" role="alert">
+                                <div class="iq-alert-text">{error}</div>
+                            </div>
+                            )
+                            }
+                     </form>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+    </div>
     
-    <div>
+    )
+}
+{/* <div>
         <h1>Login</h1>
         <form onSubmit={submitForm}>
             <input placeholder="login" type="login" onChange={(e)=>{setLogin(e.target.value)}} value={login} ></input>
@@ -40,6 +82,4 @@ export default function Login(props){
         <h2>Your are new?</h2>
         <Link to="/register"><p>Register</p></Link>
         
-    </div>)
-}
-
+</div> */}

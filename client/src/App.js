@@ -1,5 +1,4 @@
 import {CookiesProvider} from 'react-cookie';
-import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from './Login/Login';
 import { useState } from 'react';

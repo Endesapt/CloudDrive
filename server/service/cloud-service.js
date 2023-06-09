@@ -122,7 +122,7 @@ class CloudService{
     }
     async addFileShareLink(userDto,fileShareLink){
         const fileShare=await fileshareModel.findOne({addUserId:fileShareLink});
-        if(!fileShare)throw new ApiError.BadRequiest("Invalid Link");
+        if(!fileShare)throw ApiError.BadRequiest("Invalid Link");
         const user=await UserModel.findById(userDto.id);
 
         user.fileShares.push({id:fileShare.id,name:fileShare.name});
