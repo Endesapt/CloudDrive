@@ -34,11 +34,14 @@ export default function Main({setModalActive,setModalText}){
           }).then((res)=>{setFiles(res.data)});
 
     }
-    function handleFileShareChange(e){
+    function handleFileShareFileChange(e){
         const file=e.target.files[0];
         let formData = new FormData();
+        const pathnames=window.location.pathname.split('/');
+        const fileShareId=pathnames.at(-1);
         formData.append("file", file);
-        axiosApi.post('http://localhost:5000/cloud/addFile', formData,{
+        formData.append("fileShareId", fileShareId);
+        axiosApi.post('http://localhost:5000/cloud/fileShare/addFile',formData,{
             headers: {
               "Content-Type": "multipart/form-data",
             }

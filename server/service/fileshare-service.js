@@ -83,9 +83,7 @@ class FileShareService{
         }
         const fileIndex=fileShare.files.findIndex(file=>file.id==fileId);
         fileShare.files.splice(fileIndex,1);
-        fileShare.save((err)=>{
-            console.log(err);
-        });
+        fileShare.save();
         return fileShare.files;
         
 

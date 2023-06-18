@@ -1,28 +1,24 @@
 require("dotenv").config()
 const express=require("express");
-const cors=require("cors");
+const path=require("path");
 const mongoose=require("mongoose");
 const cookieParser = require("cookie-parser");
 const router= require('./router/index');
 const cloudRouter=require('./router/cloud-router');
 const errorMiddleware=require("./middleware/error-midleware");
 const fileUpload = require("express-fileupload");
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const app=express();
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(fileUpload());
 app.use(express.urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname,"public")));
 app.use('/api',router);
 app.use('/cloud',cloudRouter);
-app.use(
-  '/',
-  createProxyMiddleware({
-    target: 'http://localhost:3000',
-    changeOrigin: true,
-  })
-);
+app.get("*",(req,res)=>{
+  res.sendFile(path.join(__dirname,"public","index.html"));
+});
 app.use(errorMiddleware);
 // app.use(cors({
 //     credentials:true,
