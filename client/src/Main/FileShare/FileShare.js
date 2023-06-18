@@ -55,14 +55,31 @@ export default function FileShare(props){
             </div>);
     }
     return (<>
-        <div className="dropdown">
-            <button className="dropbtn" onClick={handle} >Options</button>
-            <div id="drop-nav" onMouseLeave={handleMouseOver} className={"dropdown-content "+(isShowed?"show":"")}>
-                <a onClick={leaveFileShare}>Leave FileShare</a>
-                <a onClick={deleteFileShare}>Delete FileShare</a>
+        <div className="col-lg-12 ">
+            <div className="card card-block card-stretch card-height files-table">
+                <div className="card-header d-flex justify-content-between">
+                    <div className="header-title">
+                        <h4 className="card-title">Files <button type="button" class="btn btn-primary btn-sm mr-2"onClick={addUser}>Add user to FileShare</button></h4>
+                    </div>
+                </div>
+                <div className="card-body pt-0">
+                    <div className="table-responsive">
+                        <table className="table mb-0 table-borderless tbl-server-info">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Size</th>
+                                    <th scope="col" />
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {files.map((value)=>(<FileShareFile fileShareId={fileShareId}key={value.id} id={value.id} name={value.name}  setFiles={setFiles} setModalText={props.setModalText} setModalActive={props.setModalActive}/>))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <div className="addfileShare-button" onClick={addUser}>Add user to fileShare</div>
-        {files.map((value)=>(<FileShareFile fileShareId={fileShareId}key={value.id} id={value.id} name={value.name}  setFiles={setFiles} setModalText={props.setModalText} setModalActive={props.setModalActive}/>))}
+        
     </>)
 }

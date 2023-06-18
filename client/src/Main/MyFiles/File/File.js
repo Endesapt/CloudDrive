@@ -1,17 +1,10 @@
 import { useState } from "react";
-import "./File.css"
+
 import axiosApi from "../../../api_provider/axios-api";
 import ShareModal from "../ShareModal/ShareModal";
 export default function File(props){
-    const [isShowed,setShowed]=useState(false);
     const id=props.id;
-    const [name,ext]=props.name.split(".");
-    function handle(){
-        setShowed((isShowed)=>(!isShowed));
-    }
-    function handleMouseOver(){
-        if(isShowed)setShowed(false);
-    }
+
     function showFile(){
         axiosApi({
             url: "http://localhost:5000/cloud/getFileById", //your url
@@ -39,7 +32,7 @@ export default function File(props){
             responseType: 'blob', // important
             params:{id:id}
         }).then(res=>{
-            const data = URL.createObjectURL(new Blob(res.data));
+            const data = URL.createObjectURL(res.data);
             const link = document.createElement('a');
             
             link.setAttribute('href', data);
@@ -80,19 +73,58 @@ export default function File(props){
         setModalActive(true);
         setModalText(<ShareModal setModalActive={setModalActive} fileId={id}/>);
     }
-    return(<div className="file-block">
-        <div>
-            <div className="file-name">{props.name}</div>
-            <div className="dropdown">
-                <button className="dropbtn" onClick={handle} >Options</button>
-                <div id="drop-nav" onMouseLeave={handleMouseOver} className={"dropdown-content "+(isShowed?"show":"")}>
-                    <a onClick={showFile}>Show</a>
-                    <a onClick={downloadFile}>Download</a>
-                    <a onClick={deleteFile}>Delete</a>
-                    <a onClick={renameFile}>Rename</a>
-                    <a onClick={shareFile}>Share</a>
-                </div>
+    return(
+        <tr>
+        <td>
+          <div className="d-flex align-items-center">
+            <div className="icon-small bg-danger rounded mr-3">
+              <i className="ri-file-excel-line" />
             </div>
-        </div>
-    </div>)
+            <div
+              onClick={showFile}
+              style={{ cursor: "pointer" }}
+            >
+              {props.name}
+            </div>
+          </div>
+        </td>
+        <td>02 MB</td>
+        <td>
+          <div className="dropdown">
+            <span
+              className="dropdown-toggle"
+              id="dropdownMenuButton6"
+              data-toggle="dropdown"
+            >
+              <i className="ri-more-fill" />
+            </span>
+            <div
+              className="dropdown-menu dropdown-menu-right"
+              aria-labelledby="dropdownMenuButton6"
+            >
+              <a className="dropdown-item" onClick={showFile}>
+                <i className="ri-eye-fill mr-2" />
+                View
+              </a>
+              <a className="dropdown-item" onClick={deleteFile}>
+                <i className="ri-delete-bin-6-fill mr-2" />
+                Delete
+              </a>
+              <a className="dropdown-item" onClick={renameFile}>
+                <i className="ri-pencil-fill mr-2" />
+                Edit
+              </a>
+              <a className="dropdown-item" onClick={shareFile}>
+                <i className="ri-printer-fill mr-2" />
+                Share
+              </a>
+              <a className="dropdown-item" onClick={downloadFile}>
+                <i className="ri-file-download-fill mr-2" />
+                Download
+              </a>
+            </div>
+          </div>
+        </td>
+      </tr>
+   )
 }
